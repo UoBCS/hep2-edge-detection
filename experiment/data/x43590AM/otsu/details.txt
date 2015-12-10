@@ -1,0 +1,7 @@
+ROC
+---
+
+Sens      Spec
+0.8813    0.9958
+
+Threshold used: 0.0510

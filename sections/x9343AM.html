@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Computational Vision/Computer Vision Edge detection methods and evaluation">
+    <meta name="author" content="Ossama Edbali">
+
+    <title>Computational Vision | Edge Detection</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../css/main.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index.html">Home</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="x9343AM.html">9343 AM</a>
+                </li>
+                <li>
+                    <a href="x10905JL.html">10905 JL</a>
+                </li>
+                <li>
+                    <a href="x43590AM.html">43590 AM</a>
+                </li>
+                <li>
+                    <a href="hed.html">Localised histogram based edge detection</a>
+                </li>
+                <li>
+                    <a href="https://github.com/UoBCS/hep2-edge-detection" target="_blank">Code on GitHub</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">9343 AM</h1>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Table of contents</h3>
+            <ul>
+                <li><a href="#background">Background Analysis</a></li>
+                <li><a href="#otsu">Otsu</a></li>
+                <li><a href="#sobel">Sobel</a></li>
+                <li><a href="#roberts">Roberts</a></li>
+                <li><a href="#canny">Canny</a></li>
+                <li><a href="#cad">Canny with Anisotropic Diffusion</a></li>
+                <li><a href="#de">Dilate-Erode method</a></li>
+                <li><a href="#log">Laplacian of Gaussian (LoG)</a></li>
+                <li><a href="#dog">Difference of Gaussians (DoG)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="background">Background analysis</h3>
+            <p>
+
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/background_surface.bmp" width="670" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr/>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="otsu">Otsu</h3>
+            <p>
+
+            </p>
+
+            <h4>Results (optimal threshold = 0.0902)</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/otsu/result.bmp" alt=""/>
+            </div>
+
+            <h4>ROC space</h4>
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/otsu/roc_space.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr/>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="sobel">Sobel</h3>
+            <p>
+
+            </p>
+            
+            <h4>Results (low, optimal and high threshold)</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/sobel/result_low_t.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/sobel/result_ok_t.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/sobel/result_high_t.bmp" alt=""/>
+            </div>
+
+            <h4>ROC space</h4>
+            <p>
+                From the ROC space we can see that high threshold values give very low sensitivity but high specificity.
+                This is because most noise edges are removed (non-edge finding likelihood increases) but we have
+                remove a lot of true edges (true edge finding likelihood decreases).
+            </p>
+
+            <p>
+                The optimal threshold is the point which lies on the <b>diagnosis line</b> chosen to be from
+                (0, 1) to (1, 0).
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/sobel/roc_space.png" alt=""/>
+                <img src="../experiment/data/x9343AM/sobelA/roc_space.bmp" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against threshold</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/sobel/batch.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="roberts">Roberts</h3>
+            <p>
+
+            </p>
+
+            <h4>ROC space</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/roberts/roc_space.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/robertsA/roc_space.bmp" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against threshold</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/sobel/batch.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="canny">Canny</h3>
+            <p>
+
+            </p>
+
+            <h4>ROC space</h4>
+
+            <p>
+                See report for information on why Canny performed "badly".
+                Even between sigma (0, 1] the sensitivity is under 0.40
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/canny/roc_space.png" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against sigma</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/canny/batch.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="cad">Canny with Anisotropic Diffusion</h3>
+            <p>For explanations please see the attached report.</p>
+
+            <h4>Results (1, 5 and 15 iterations)</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/cad/result_1_iteration.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/cad/result_5_iterations.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/cad/result_15_iterations.bmp" alt=""/>
+            </div>
+
+            <h4>ROC space</h4>
+
+            <p>
+                As we can see Anisotropic Diffusion has improved Canny a lot (doubling the sensitivity value).
+                This is because AD removes noise without blurring the image (instead it sort of "cartoonizes" it).
+                This enables canny edge detector to not suffer from low intensity cells at the edges (and therefore
+                miss edges and creating discontinuities).
+            </p>
+
+            <p>
+                In fact Anisotropic Diffusion is widely used before segmenting cell images.
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/cad/roc_space_iterations.png" alt=""/>
+                <img src="../experiment/data/x9343AM/cad/roc_space_kappa.bmp" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against number of iterations and kappa</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/cad/batch_iterations.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/cad/batch_kappa.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="de">Dilate-Erode method</h3>
+            <p>For explanations please see the attached report.</p>
+
+            <h4>Results (threshold at 10, 30 and 50 iterations)</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/dilate_erode/result_t_10.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/dilate_erode/result_t_30.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/dilate_erode/result_t_50.bmp" alt=""/>
+            </div>
+
+            <h4>ROC space</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/dilate_erode/roc_space_threshold.png" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against threshold</h4>
+            <p>
+                Here we can notice that the sensitivity decreases very fast compared to Sobel (or Roberts).
+                This is because during the erode process some edges might be removed and this propagates
+                to the Sobel edge detection and thresholding.
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/dilate_erode/batch_threshold.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="log">Laplacian of Gaussian</h3>
+            <p>For explanations please see the attached report.</p>
+
+            <h4>Results (sigma: 1 and 3)</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/LoG/result_sigma_1.bmp" alt=""/>
+                <img src="../experiment/data/x9343AM/LoG/result_sigma_3.bmp" alt=""/>
+            </div>
+
+            <h4>ROC space</h4>
+
+            <p>
+                It can be noticed that LoG did not perform very well with this image.
+
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/LoG/roc_space.bmp" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against sigma</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/LoG/batch.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3 id="dog">Difference of Gaussian</h3>
+
+            <h4>ROC space</h4>
+
+            <p>
+                One can see that DoG is an approximation of LoG since the two have almost similar
+                ROC space points (according to their respective parameters).
+            </p>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/DoG/roc_space.bmp" alt=""/>
+            </div>
+
+            <h4>Sensitivity/Specificity against minimum sigma</h4>
+
+            <div class="text-center">
+                <img src="../experiment/data/x9343AM/DoG/batch.bmp" alt=""/>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="row">
+            <div class="col-lg-12">
+                <p>MIT License - Ossama Edbali 2015/2016</p>
+            </div>
+        </div>
+        <!-- /.row -->
+    </footer>
+
+</div>
+<!-- /.container -->
+
+<!-- jQuery -->
+<script src="../js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="../js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

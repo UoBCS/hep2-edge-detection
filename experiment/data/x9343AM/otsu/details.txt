@@ -1,0 +1,11 @@
+Without imadjust
+
+Chosen threshold: 0.0902
+Sensitivity: 0.9225
+Specificity: 0.9974
+
+With imadjust
+
+Chosen threshold: 0.3431
+Sensitivity: 0.9225
+Specificity: 0.9974
