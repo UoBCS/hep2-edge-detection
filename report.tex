@@ -28,27 +28,24 @@
 	The edge detection/segmentation algorithms used are: Otsu, Sobel, Roberts, Canny,
 	Canny using anisotropic diffusion,
 	Laplacian of Gaussian, Difference of Gaussians, dilate-erode method and localised
-	histogram edge detection (the last one is my development).
+	histogram based edge detection (the last one is my development).
 	
-	The evaluation of each method is carried by ROC curves, sensitivity-specificity variation graph and correspondence analysis.
+	The evaluation of each method is carried by ROC curves, sensitivity-specificity variation graphs and correspondence analysis.
 	
-	\textbf{All the Matlab code and full data can be found here: \url{https://github.com/UoBCS/hep2-edge-detection}.}
+	\textbf{All the Matlab code and full data can be found here: \url{http://uobcs.github.io/hep2-edge-detection/}.}
 	
 	\section{Method}
 
-	Given the three images (9343 AM, 10905 JL and 43590 AM) it can be seen that they
-	are the outcome of different fluorescence patterns on the HEp-2 cells.
-	First of all the experiments where conducted using three main scripts:
-	\texttt{x9343AMtask}, \texttt{x10905JLtask} and \texttt{x43590AMtask}.
+	First of all the experiments where conducted using three main scripts (one for each
+	image):
+	\verb|x9343AM_task|, \verb|x10905JL_task| and \verb|x43590AM_task|.
 	
-	Each script loads the relative image and true edge image (1). Then converts the original image to a grey-scale image using the \texttt{rgb2gray} Matlab function (2).
+	Each script loads the relative image and true edge image (1). Then produces a greyscale image using the \texttt{rgb2gray} Matlab function (2).
 	Finally, it performs all the edge detection algorithms described above (delegating
 		to the class \texttt{EdgeDetection.m}) (3).
-	
 	A pre-analysis (qualitative) of the input has been carried out using the
 	background approximation image as a surface to see where illumination varies (using \verb|show_background| function).
-	It can be seen that the various input images use different fluorescence patterns on
-	the HEp-2 cells.	
+	It can be seen that the various input images are the outcome of different fluorescence patterns on	the HEp-2 cells.
 	
 	For all edge detectors there is a method inside the \texttt{EdgeDetection} class
 	as well as methods for generating the ROC space and specificity and sensitivity
@@ -58,25 +55,27 @@
 	\verb|magnitude| to produce the final result (before thresholding).
 	
 	In regards to LoG, Gaussian smoothing was performed using \verb|gaussian_smoothing(image, sigma)|. Then convolve the smoothed image with the laplacian
-	operator and finally find the zero crossings: \verb|edge(res, 'zerocross')|.
+	operator and finally find the zero crossings using \verb|edge(res, 'zerocross')|.
 	
 	\subsection*{Otsu's method}
-	One of the algorithms used in this study is the Otsu's algorithm.
+	One of the algorithms used in this study is Otsu's algorithm.
 	The aim is to find the threshold value where the sum of foreground and background spreads is at its minimum. First of all I calculate the weighted mean and variance
 	for both the background and foreground ($\mu_b$, $\sigma_b^2$ and
-	$\mu_f$, $\sigma_f^2$). Then I compute the \textbf{within-class variance} (two variances multiplied by their associated weights): $\sigma_W^2 = W_b \sigma_b^2+W_f \sigma_f^2$. I do the same calculation for candidate thresholds and the one that has the lowest within-class variance will be chosen. This algorithm is implemented in the Matlab's
+	$\mu_f$, $\sigma_f^2$). Then I compute the \textbf{within-class variance} (two variances multiplied by their associated weights): $\sigma_W^2 = W_b \sigma_b^2+W_f \sigma_f^2$. I do the same calculation for candidate thresholds and the one that has the lowest within-class variance will be chosen. This algorithm is implemented in Matlab's
 	\verb|graythresh|. This will produce a binary image which edges' can be detected
 	easily by any of the edge detectors (Sobel in the experiment).
 	
 	\subsection*{Dilate-erode method}	
 	
 	The dilate-erode method is a 4-step algorithm that uses a combination of  morphological operators before using Sobel edge detector. The reason why this method
-	has been used is that when Sobel (or Roberts) is performed on the grey-scale image, there are some lines of high contrast surrounding
+	has been used is that when Sobel (or Roberts) is performed on the greyscale image, there are some lines of high contrast surrounding
 	the actual edge (like noise). The gaps between these small lines and the actual edge
 	can be filled using a \textbf{dilate morphological operator} (or non-linear neighbourhood
 	operator) with a structuring element (from the \verb|strel| function). Then
-	\verb|imfill| has been used to fill the holes inside the cell.
-	The next step is to reduce to get the cell back to its state before dilation using
+	\verb|imfill| has been used to fill the holes inside the cell - this step can
+	be skipped but it will result in a lower performance.
+	The next step is to "reduce" the cell to get it back to its state before
+	dilation using
 	the \textbf{erosion} operator. Finally the Sobel filter has been used to detect
 	edges.
 	There are various ways to create the  morphological operators. Here is the one
@@ -84,6 +83,9 @@
 	
 	\subsection*{Canny with anisotropic diffusion (CAD)}	
 	
+	From the study it has been noted that Canny performed with sensitivity lower than
+	0.4 in all input images. To enhance the images but still preserving true edges,
+	\textbf{anisotropic diffusion} has been used.
 	Anisotropic diffusion is a non-linear diffusion filtering for avoiding the
 	blurring problems of Gaussian smoothing (and others). It is an iterative
 	process to perform edge-preserving smoothing on the cells.
@@ -122,14 +124,14 @@ end
 \end{verbatim}
 
 	An optimal/ideal edge detector would produce a value of (0, 1) or $spec = sens = 1$.
-	This is the primary evaluation method that I used to compare the various edge
-	detectors as well as how they perform differently on each input image.
+	Practically the optimal parameter is chosen against a \textbf{diagnosis line}
+	(in the experiment I used (0, 1) to (1, 0)).
 	
 	\subsection*{Sensitivity/Specificity variation}	
 	
 	This evaluation method simply uses the sensitivity and specificity parameters in function
 	of a variable (threshold, sigma, kappa or number of iterations). From this we
-	can see how different algorithms respond to variation of algorithm's parameters.
+	can see how different algorithms respond to the variation of some parameters.
 	This is implemented by the \verb|roc_params_comparison| static method in the
 	\verb|EdgeDetection| class.
 	
@@ -148,27 +150,28 @@ end
 	\section{Results}
 	
 	A very interesting result is the comparison between Canny and Canny with anisotropic diffusion (using 9343 AM as a reference):	
-	
-\begin{figure}[H]
+
+\begin{figure}[htp]
+
 \centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=.6\linewidth]{x9343AM/comparison.png}
-  \caption{ROC space for CAD (red) and Canny (blue)}
-  \label{fig:sub1}
-\end{subfigure}
-\label{fig:roc_space}
+\includegraphics[width=.3\textwidth]{x9343AM/comparison.png}\hfill
+\includegraphics[width=.3\textwidth]{x9343AM/canny/result.png}\hfill
+\includegraphics[width=.3\textwidth]{x9343AM/cad/result_15_iterations.png}
+
+\caption{(1) ROC space comparison, (2) Canny, (3) Canny with anisotropic diffusion }
+\label{fig:figure3}
+
 \end{figure}
 	
 	It can be noted that Canny does not perform very well (sensitivity under 0.4).
 	However if we apply anisotropic diffusion,
-	sensitivity increases drastically (over 0.8). This happens because the input image
+	sensitivity drastically increases (over 0.8). This happens because the input image
 	is very dark at the borders and Canny looses information in the smoothing
 	step as well as in the non-maximum suppression step. Supporting this statement
 	are the results of applying Canny to 43590 AM (which is very dark compared to
 	the other two images and therefore a high smoothing).
 	
-	A summary of the whole data using the optimal parameters (\textbf{for the FULL evaluation graphs and tables please visit this site:}):
+	A summary of the whole data using the optimal parameters (\textbf{for the FULL evaluation graphs, tables and image results please visit this site: \url{http://uobcs.github.io/hep2-edge-detection/}}):
 	
 \begin{table}[H]
 \centering
@@ -206,7 +209,7 @@ end
 	
 	\section{Conclusion}
 
-	From the evaluation Otsu's method performed the best in all input images:
+	From the evaluation, Otsu's method performed the best in all input images:
 	
 \begin{table}[H]
 \centering
@@ -221,12 +224,12 @@ Image    & Sensitivity & Specificity & Threshold \\ \midrule
 \end{tabular}
 \end{table}
 
-	It can be noted that Canny does not perform very well (sensitivity under 0.4).
-	However if we apply anisotropic diffusion,
-	sensitivity increases drastically (over 0.8). This happens because the input image
-	is very dark at the borders and Canny looses information in the smoothing
-	step as well as in the non-maximum suppression step. Supporting this statement
-	are the results of applying Canny to 43590 AM (which is very dark compared to
-	the other two images and therefore a high smoothing).
-
+	In this study various alternatives to the traditional edge detectors have been
+	tried because of their specific application to cell edge detection. For example
+	Canny is very sensitive to the fluorescence around the cells. LoG and DoG have
+	low sensitivity (for optimal parameters) because of LoG highlights regions
+	of rapid intensity changes but the input images have gradual
+	change from the cell to the background (fluorescence effect). Some extensions to
+	the edge detectors (such as dilate-erode, adjust and anisotropic diffusion)
+	have proven to increase the efficacy of the edge detection. 
 \end{document}
