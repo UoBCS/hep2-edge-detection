@@ -27,8 +27,7 @@
 	
 	The edge detection/segmentation algorithms used are: Otsu, Sobel, Roberts, Canny,
 	Canny using anisotropic diffusion,
-	Laplacian of Gaussian, Difference of Gaussians, dilate-erode method and localised
-	histogram based edge detection (the last one is my development).
+	Laplacian of Gaussian, Difference of Gaussians and dilate-erode method.
 	
 	The evaluation of each method is carried by ROC curves, sensitivity-specificity variation graphs and correspondence analysis.
 	
@@ -40,9 +39,9 @@
 	image):
 	\verb|x9343AM_task|, \verb|x10905JL_task| and \verb|x43590AM_task|.
 	
-	Each script loads the relative image and true edge image (1). Then produces a greyscale image using the \texttt{rgb2gray} Matlab function (2).
+	Each script loads the relative image and true edge image. Then produces a greyscale image using the \texttt{rgb2gray} Matlab function.
 	Finally, it performs all the edge detection algorithms described above (delegating
-		to the class \texttt{EdgeDetection.m}) (3).
+		to the class \texttt{EdgeDetection.m}).
 	A pre-analysis (qualitative) of the input has been carried out using the
 	background approximation image as a surface to see where illumination varies (using \verb|show_background| function).
 	It can be seen that the various input images are the outcome of different fluorescence patterns on	the HEp-2 cells.
@@ -110,22 +109,19 @@
 	
 	\subsection*{ROC curve}
 	
-	Here \verb|ID| is the image with detected edges and \verb|IT| is the image with
-	true edges.	
+	The ROC curve has been used to detect which parameter to choose according
+	to a \textbf{diagnosis line} (in the experiment
+	(0, 1) to (1, 0) has been used). The implementation can be found under
+	the \verb|compute_roc(ID, IT)| function, where ID is the image
+	with detected edges and \verb|IT| is the image with true edges.
+	Basically it takes the two binary images and performs logical operations
+	for all possible cases (e.g. true positive, false positive etc\ldots) and
+	calculates the sum of "on" pixels in the resulting images. Then it combines
+	the results to find sensitivity and specificity:
 	
-\begin{verbatim}
-function [ sensitivity, specificity ] = compute_roc( ID, IT )
-     TP = ID & IT; TP = sum(TP(TP == 1));
-     FP = ID & ~IT; FP = sum(FP(FP == 1));
-     FN = ~ID & IT; FN = sum(FN(FN == 1));
-     TN = ~ID & ~IT; TN = sum(TN(TN == 1));
-     sensitivity = TP / (TP + FN); specificity = TN / (TN + FP);
-end
-\end{verbatim}
-
-	An optimal/ideal edge detector would produce a value of (0, 1) or $spec = sens = 1$.
-	Practically the optimal parameter is chosen against a \textbf{diagnosis line}
-	(in the experiment I used (0, 1) to (1, 0)).
+	\begin{center}
+	\verb|sensitivity = TP / (TP + FN)| and \verb|specificity = TN / (TN + FP);|
+	\end{center}
 	
 	\subsection*{Sensitivity/Specificity variation}	
 	
@@ -149,7 +145,7 @@ end
 	
 	\section{Results}
 	
-	A very interesting result is the comparison between Canny and Canny with anisotropic diffusion (using 9343 AM as a reference):	
+	A very interesting result is the comparison between Canny and Canny with anisotropic diffusion (using 9343 AM as a reference).
 
 \begin{figure}[htp]
 
@@ -207,10 +203,6 @@ end
 \end{tabular}
 \end{table}
 	
-	\section{Conclusion}
-
-	From the evaluation, Otsu's method performed the best in all input images:
-	
 \begin{table}[H]
 \centering
 \caption{Otsu evaluation}
@@ -224,12 +216,27 @@ Image    & Sensitivity & Specificity & Threshold \\ \midrule
 \end{tabular}
 \end{table}
 
+Overall Otsu has proven to be the best choice in all the images. Although
+computationally expensive, Otsu's method takes into account foreground and
+background and gives satisfactory results only when the numbers of pixels in each class are close to each other (which is the case here).
+
+Sobel and Roberts have performed almost equally in all images however Sobel has
+higher specificity because it is less sensitive to isolated high intensity point variations. Thus it gives correct results when the edge do not exist in a given point.
+
+In regards to the dilate-erode method
+we can notice that the sensitivity decreases very fast compared to Sobel (or Roberts). This is because during the erode process some edges might be removed and this propagates to the Sobel edge detection and thresholding.
+
+
+	
+	\section{Conclusion}
+	
 	In this study various alternatives to the traditional edge detectors have been
 	tried because of their specific application to cell edge detection. For example
 	Canny is very sensitive to the fluorescence around the cells. LoG and DoG have
-	low sensitivity (for optimal parameters) because of LoG highlights regions
+	low sensitivity (for optimal parameters) because they highlight regions
 	of rapid intensity changes but the input images have gradual
 	change from the cell to the background (fluorescence effect). Some extensions to
 	the edge detectors (such as dilate-erode, adjust and anisotropic diffusion)
-	have proven to increase the efficacy of the edge detection. 
+	have proven to increase the efficacy of the edge detection.
+	
 \end{document}
