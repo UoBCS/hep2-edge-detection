@@ -103,7 +103,9 @@
         <div class="col-md-12">
             <h3 id="background">Background analysis</h3>
             <p>
-
+                We can see that the borders of the image are very dark. The high peaks indicate the cells and
+                the lower ones are the fluorescence around them.
+                From this analysis we can conclude that this is the so-called "speckled" pattern of antinuclear antibody test.
             </p>
 
             <div class="text-center">
@@ -307,7 +309,7 @@
             <h3 id="de">Dilate-Erode method</h3>
             <p>For explanations please see the attached report.</p>
 
-            <h4>Results (threshold at 10, 30 and 50 iterations)</h4>
+            <h4>Results (threshold at 10, 30 and 50)</h4>
 
             <div class="text-center">
                 <img src="../experiment/data/x9343AM/dilate_erode/result_t_10.bmp" alt=""/>
@@ -359,7 +361,10 @@
 
             <p>
                 It can be noticed that LoG did not perform very well with this image.
-
+                One can note that specificity if high because most of the non-edges
+                are correctly detected. However we have the same problem with Canny
+                (without AD) where edges around the cell are detected. As we
+                saw this can be solved using the dilate-erode method.
             </p>
 
             <div class="text-center">
